@@ -10,31 +10,14 @@ import java.util.StringTokenizer;
  */
 public class LPA_Mapper extends Mapper<LongWritable, Text, Text, Text>{
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-//        String[] name = value.toString().split("\\t+");
-//        String[] names = name[0].split("#");
-//        String namesList = names[1];
-//        String[] nameList = name[1].split("#");
-//
-//        context.write(new Text(namesList), new Text("#" + nameList[1]));
-//        context.write(new Text(namesList), new Text("$" + nameList[0]));
-//
-//        String[] name_split = nameList[1].split(";");
-//
-//        for (String string:name_split) {
-//            String[] split = string.split(":");
-//            context.write(new Text(split[0]), new Text(name[0]));
-//        }
-        //        String[] split = value.toString().split("\t");//[0]6#丁同  [1]0.008290701427018436#李三:0.250;李文秀:0.500;老头子:0.125;霍元龙:0.125
-//        String name = split[0].split("#")[1];//丁同
-//        String namevalue="#"+split[1].split("#")[1];//#李三:0.250;李文秀:0.500;老头子:0.125;霍元龙:0.125
-//        String[] split1 = split[1].split("#");//[0]0.008290701427018436   [1]李三:0.250;李文秀:0.500;老头子:0.125;霍元龙:0.125
-//        String[] split2 = split1[1].split(";");//李三:0.250
-//        for(String str:split2){
-//            String[] split3 = str.split(":");
-//            context.write(new Text(split3[0]),new Text(split[0]));
-//        }
-//        context.write(new Text(name),new Text(namevalue));
-//        context.write(new Text(name),new Text("@"+split1[0]));
+    /*
+        line = 33$义生	0.0015630487375194626#程青竹:0.5000;袁承志:0.5000
+        PR = 0.0015630487375194626
+        name = 义生
+        nameList = 程青竹:0.5000;袁承志:0.5000
+        label = 33
+
+     */
         String line = value.toString();
         int index_t = line.indexOf("\t");
         int index_j = line.indexOf("#");
@@ -47,9 +30,11 @@ public class LPA_Mapper extends Mapper<LongWritable, Text, Text, Text>{
         while(tokenizer.hasMoreTokens()){
             String[] element = tokenizer.nextToken().split(":");
             context.write(new Text(element[0]),new Text(label+"#"+name));
+            //程青竹 33#义生
+            //袁承志 33#义生
         }
-        context.write(new Text(name),new Text("#"+nameList));
-        context.write(new Text(name),new Text("$"+label));
-        context.write(new Text(name),new Text("@"+PR));
+        context.write(new Text(name),new Text("#"+nameList)); // 义生#程青竹:0.5000;袁承志:0.5000
+        context.write(new Text(name),new Text("$"+label)); // 义生$33
+        context.write(new Text(name),new Text("@"+PR)); // 义生@0.0015630487375194626
     }
 }

@@ -8,73 +8,20 @@ import java.io.IOException;
  * Created by HRJ on 2019/4/16.
  */
 public class LPA_Reducer extends Reducer<Text, Text, Text, Text>{
-//    Map<String, String> globalLabel = new HashMap<String, String>();
-//
-//    protected void reduce(Text key, Iterable<Text> value, Context context) throws IOException, InterruptedException {
-//        Map<String, Double> name_weight = new HashMap<String, Double>();
-//        Map<String, String> name_label = new HashMap<String, String>();
-//
-//        String peopleRelation = "";
-//        String peoplePageRank = "";
-//        List<String> people_label = new ArrayList<String>();
-//        for (Text values :value) {
-//            String content = values.toString();
-//            if (content.startsWith("#")){
-//                peopleRelation = content.replace("#","");
-//            }else if (content.startsWith("$")){
-//                peoplePageRank = content.replace("$", "");
-//            }else{
-//                people_label.add(content);
-//            }
-//        }
-//
-//        String[] arrName_weight = peopleRelation.split(",");
-//        for (String string:arrName_weight) {
-//            String[] split = string.split("#");
-//            name_weight.put(split[0], Double.parseDouble(split[1]));
-//        }
-//
-//        Map<String, Double> label_weight = new HashMap<String, Double>();
-//        for (String string:people_label) {
-//            String[] split = string.split("#");
-//            name_label.put(split[1], split[0]);
-//            String label = split[0];
-//            if (globalLabel.containsKey(split[1])){
-//                label = globalLabel.get(split[1]);
-//            }
-//            if (!label_weight.containsKey(label)){
-//                label_weight.put(label, name_weight.get(split[1]));
-//            }else {
-//                Double weight = label_weight.get(label);
-//                if (name_weight.containsKey(split[1])){
-//                    label_weight.put(label, weight);
-//                }
-//            }
-//        }
-//
-//        double maxWeight = 0;
-//        String newLabel = "";
-//        for (Map.Entry<String, Double> entry:label_weight.entrySet()) {
-//            double weight = entry.getValue();
-//            if (maxWeight < weight){
-//                maxWeight = weight;
-//                newLabel = entry.getKey();
-//            }
-//        }
-//
-//        globalLabel.put(key.toString(), newLabel);
-//
-//        Text keyWrite = new Text(newLabel + "#" + key.toString());
-//        Text valueWrite = new Text(peoplePageRank + "#" + peopleRelation);
-//        context.write(keyWrite, valueWrite);
-//    }
+    /*输入：
+    //程青竹 33#义生
+    //袁承志 33#义生
+    // 义生 #程青竹:0.5000;袁承志:0.5000
+    // 义生 $33
+    // 义生 @0.0015630487375194626
+     */
     Map<String,String> name_label_map = new HashMap<String, String>();
 
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        String label = "";
-        String nameList = "";
-        String pr = "";
+        String label = "";//33
+        String nameList = "";//程青竹:0.5000;袁承志:0.5000
+        String pr = "";//0.0015630487375194626
         Map<String,String> relation_name_label = new HashMap<String, String>();
         for(Text text:values){
             String str = text.toString();
@@ -86,7 +33,7 @@ public class LPA_Reducer extends Reducer<Text, Text, Text, Text>{
                 nameList = str.replace("#","");
             }else if (str.length() > 0){
                 String[] element = str.split("#");
-                relation_name_label.put(element[1],element[0]);
+                relation_name_label.put(element[1],element[0]);//义生  33
             }
         }
 
@@ -94,11 +41,11 @@ public class LPA_Reducer extends Reducer<Text, Text, Text, Text>{
         StringTokenizer nameList_Tokenizer = new StringTokenizer(nameList,";");
         while(nameList_Tokenizer.hasMoreTokens()){
             String[] name_pr = nameList_Tokenizer.nextToken().split(":");
-            Float current_pr = Float.parseFloat(name_pr[1]);
-            String current_label = relation_name_label.get(name_pr[0]);
+            Float current_pr = Float.parseFloat(name_pr[1]);// current_pr =0.5000
+            String current_label = relation_name_label.get(name_pr[0]);// current_label =程青竹
             Float label_pr;
             if ((label_pr = label_pr_map.get(current_label)) != null){
-                label_pr_map.put(current_label,label_pr+current_pr);
+                label_pr_map.put(current_label,label_pr+current_pr);// 程青竹 累加和
             }else{
                 label_pr_map.put(current_label,current_pr);
             }
