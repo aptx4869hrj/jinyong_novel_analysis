@@ -22,7 +22,7 @@ public class LPA_Driver {
         if (args == null || args.length == 0) {
             return;
         }
-        //for (int i = 13;i < 23; i++) {
+        for (int i = 13;i < 23; i++) {
             //该对象会默认读取环境中的 hadoop 配置。当然，也可以通过 set 重新进行配置
             Configuration conf = new Configuration();
 
@@ -46,15 +46,15 @@ public class LPA_Driver {
             job.setOutputValueClass(Text.class);
 
             //指定job的输入原始文件所在目录
-            FileInputFormat.setInputPaths(job, new Path("File/output"+ "12" +"/part-r-00000"));
+            FileInputFormat.setInputPaths(job, new Path("File/output"+ (i-1) +"/part-r-00000"));
+        //FileInputFormat.setInputPaths(job, new Path("File/output12/part-r-00000"));
             //指定job的输出结果所在目录
-            FileOutputFormat.setOutputPath(job, new Path("File/output13"));
+            FileOutputFormat.setOutputPath(job, new Path("File/output" + i));
 
             //将job中配置的相关参数，以及job所用的java类所在的jar包，提交给yarn去运行
         /*job.submit();*/
             boolean res = job.waitForCompletion(true);
-        //}
-       // System.exit(0);
-        System.exit(res?0:1);
+        }
+        System.exit(0);
     }
 }

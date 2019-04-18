@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="jinyong_novel_analysis" target="1.5" />
+      <module name="jinyong_novel_analysis" target="1.8" />
       <module name="jinyongn" target="1.5" />
     </bytecodeTargetLevel>
   </component>
